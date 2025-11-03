@@ -173,7 +173,7 @@ class _DiagnosticScreenState extends State<DiagnosticScreen> {
         ...tests.entries.map((entry) {
           final testData = entry.value as Map;
           final prediction = testData['prediction'];
-          final confidence = (testData['confidence'] as num).toDouble().toStringAsFixed(3);
+          final confidence = (testData['confidence'] as num).toDouble();
           final description = testData['description'];
           final inputRange = testData['inputRange'] as Map;
           final allResultsList = testData['allResults'] as List;
@@ -201,7 +201,7 @@ class _DiagnosticScreenState extends State<DiagnosticScreen> {
                         labelStyle: TextStyle(color: color, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(width: 8),
-                      Text('Confidence: $confidence'),
+                      Text('Confidence: ${(confidence * 100).toStringAsFixed(1)}%'),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -233,7 +233,7 @@ class _DiagnosticScreenState extends State<DiagnosticScreen> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            prob.toStringAsFixed(3),
+                            '${(prob * 100).toStringAsFixed(1)}%',
                             style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
                           ),
                         ],

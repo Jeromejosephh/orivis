@@ -90,11 +90,11 @@ class _ResultScreenState extends State<ResultScreen> {
                 final below = conf < th; //Below-threshold flag
                 return Column(
                   children: [
-                    Text('Confidence: ${conf.toStringAsFixed(2)}'), //Confidence label
+                    Text('Confidence: ${(conf * 100).toStringAsFixed(1)}%'), //Confidence as percentage
                     const SizedBox(height: 6),
                     if (below)
                       Chip(
-                        label: Text('Below threshold (${th.toStringAsFixed(2)})'), //Threshold hint
+                        label: Text('Below threshold (${(th * 100).toStringAsFixed(0)}%)'), //Threshold as percentage
                         backgroundColor: Colors.orange.shade100,
                       ),
                   ],
