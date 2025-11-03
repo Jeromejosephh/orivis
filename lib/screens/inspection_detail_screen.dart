@@ -16,6 +16,7 @@ class InspectionDetailScreen extends StatefulWidget {
 class _InspectionDetailScreenState extends State<InspectionDetailScreen> {
   late Map<String, dynamic> it; //Mutable copy of item
   final data = DataService(); //Data service
+  bool _hasChanges = false; //Track if edits were made
 
   @override
   void initState() {
@@ -81,6 +82,7 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen> {
       it['station'] = st.text;
       it['operatorId'] = op.text;
       await data.update(widget.actualIndex, it); //Persist edit
+      _hasChanges = true; //Mark changes made
       if (!mounted) return;
       setState(() {}); //Refresh UI
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Inspection updated'))); //Confirm
@@ -122,6 +124,10 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Inspection Details'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context, _hasChanges),
+        ),
         actions: [
           IconButton(tooltip: 'Share', onPressed: _share, icon: const Icon(Icons.ios_share)), //Share
           IconButton(tooltip: 'Edit', onPressed: _edit, icon: const Icon(Icons.edit)), //Edit
@@ -150,7 +156,7 @@ class _InspectionDetailScreenState extends State<InspectionDetailScreen> {
                 labelStyle: TextStyle(color: color, fontWeight: FontWeight.w600),
               ),
               const SizedBox(width: 12),
-              Text('Confidence: ${conf.toStringAsFixed(2)}'), //Score label
+              Text('Confidence: ${(conf * 100).toStringAsFixed(1)}%'), //Score label
             ],
           ),
           const SizedBox(height: 8),

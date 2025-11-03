@@ -303,14 +303,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Card(
                     color: Colors.green.shade50,
                     child: Container(
-                      height: 90,
+                      height: 100,
                       padding: const EdgeInsets.all(12),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('${stats['ok']}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.green)))),
+                          Text('$okCount', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.green)),
                           const SizedBox(height: 4),
-                          const Text('OK Today', style: TextStyle(fontSize: 12, color: Colors.green)),
+                          const Text('OK', style: TextStyle(fontSize: 12, color: Colors.green, fontWeight: FontWeight.w600)),
+                          Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('($periodLabel)', style: const TextStyle(fontSize: 10, color: Colors.green)))),
                         ],
                       ),
                     ),
@@ -321,14 +322,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Card(
                     color: Colors.red.shade50,
                     child: Container(
-                      height: 90,
+                      height: 100,
                       padding: const EdgeInsets.all(12),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('${stats['defect']}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.red)))),
+                          Text('$defectCount', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.red)),
                           const SizedBox(height: 4),
-                          const Text('Defects Today', style: TextStyle(fontSize: 12, color: Colors.red)),
+                          const Text('Defects', style: TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w600)),
+                          Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('($periodLabel)', style: const TextStyle(fontSize: 10, color: Colors.red)))),
                         ],
                       ),
                     ),
@@ -339,14 +341,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Card(
                     color: Colors.blue.shade50,
                     child: Container(
-                      height: 90,
+                      height: 100,
                       padding: const EdgeInsets.all(12),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('$okRate%', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue)))),
+                          Text('$okRate%', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue)),
                           const SizedBox(height: 4),
-                          const Text('OK Rate', style: TextStyle(fontSize: 12, color: Colors.blue)),
+                          const Text('Pass Rate', style: TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.w600)),
+                          const Text('(Overall)', style: TextStyle(fontSize: 10, color: Colors.blue)),
                         ],
                       ),
                     ),
@@ -578,7 +581,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: 4),
-                                    Text('Confidence: ${conf.toStringAsFixed(2)}'),
+                                    Text('Confidence: ${(conf * 100).toStringAsFixed(1)}%'),
                                     if (pid.isNotEmpty) Text('Product ID: $pid'),
                                     if (bid.isNotEmpty) Text('Batch ID: $bid'),
                                     if (st.isNotEmpty) Text('Station: $st'),
