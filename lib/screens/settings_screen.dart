@@ -6,6 +6,7 @@ import '../services/data_service.dart';
 import 'package:share_plus/share_plus.dart';
 import '../services/logging_service.dart';
 import 'about_screen.dart';
+import 'diagnostic_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -181,6 +182,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const Divider(height: 32),
             const Text('Support & Diagnostics'), //Section title
             const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.analytics, color: Colors.purple),
+              title: const Text('Model Diagnostics'),
+              subtitle: const Text('Test preprocessing and debug model predictions'),
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const DiagnosticScreen())); //Open Diagnostic
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.bug_report),
               title: const Text('Export logs'),

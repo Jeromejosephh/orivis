@@ -95,12 +95,11 @@ class InferenceService {
       for (int y = 0; y < _inputH; y++) {
         for (int x = 0; x < _inputW; x++) {
           final p = resized.getPixel(x, y);
-          final r = (p.r / 255.0 - 0.5) * 2.0; //Normalize to [-1,1]
-          final g = (p.g / 255.0 - 0.5) * 2.0;
-          final b = (p.b / 255.0 - 0.5) * 2.0;
-          floats[0][y][x][0] = r;
-          floats[0][y][x][1] = g;
-          floats[0][y][x][2] = b;
+          // Use raw pixel values [0, 255] - no normalization
+          // Based on diagnostic results showing Raw normalization works best
+          floats[0][y][x][0] = p.r.toDouble();
+          floats[0][y][x][1] = p.g.toDouble();
+          floats[0][y][x][2] = p.b.toDouble();
         }
       }
       inputTensorObj = floats;
