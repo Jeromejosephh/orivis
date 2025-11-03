@@ -120,15 +120,33 @@ class _HomeScreenState extends State<HomeScreen> {
     return out.toList(); //Materialize list
   }
 
-  Map<String, int> _getTodayStats() {
-    final today = DateTime.now(); //Compute daily counts
+  Map<String, dynamic> _getFilteredStats() {
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
     int okCount = 0, defectCount = 0;
+    
     for (final item in history) {
       final ts = item['timestamp'] ?? '';
+      if (ts.isEmpty) continue;
+      
       try {
         final dt = DateTime.parse(ts);
-        final sameDay = dt.year == today.year && dt.month == today.month && dt.day == today.day;
-        if (sameDay) {
+        bool includeItem = false;
+        
+        // Check if item matches current date filter
+        if (_dateFilter == 'all') {
+          includeItem = true;
+        } else if (_dateFilter == 'today') {
+          includeItem = dt.isAfter(todayStart);
+        } else if (_dateFilter == '7d') {
+          includeItem = dt.isAfter(now.subtract(const Duration(days: 7)));
+        } else if (_dateFilter == 'custom' && _customStart != null && _customEnd != null) {
+          final start = DateTime(_customStart!.year, _customStart!.month, _customStart!.day);
+          final end = DateTime(_customEnd!.year, _customEnd!.month, _customEnd!.day, 23, 59, 59, 999);
+          includeItem = (dt.isAtSameMomentAs(start) || dt.isAfter(start)) && (dt.isBefore(end) || dt.isAtSameMomentAs(end));
+        }
+        
+        if (includeItem) {
           final label = (item['label'] ?? '').toString().toUpperCase();
           if (label == 'OK') {
             okCount++;
@@ -138,7 +156,22 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       } catch (_) {}
     }
-    return {'ok': okCount, 'defect': defectCount}; //Return summary
+    
+    // Generate label based on filter
+    String periodLabel;
+    if (_dateFilter == 'all') {
+      periodLabel = 'All Time';
+    } else if (_dateFilter == 'today') {
+      periodLabel = 'Today';
+    } else if (_dateFilter == '7d') {
+      periodLabel = 'Last 7 Days';
+    } else if (_dateFilter == 'custom' && _customStart != null && _customEnd != null) {
+      periodLabel = '${_customStart!.month}/${_customStart!.day}–${_customEnd!.month}/${_customEnd!.day}';
+    } else {
+      periodLabel = 'Today';
+    }
+    
+    return {'ok': okCount, 'defect': defectCount, 'label': periodLabel};
   }
 
   Future<void> _shareInspection(Map<String, dynamic> it) async {
@@ -211,9 +244,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext ctx) {
-    final stats = _getTodayStats(); //Compute today stats
-    final todayTotal = stats['ok']! + stats['defect']!;
-    final okRate = todayTotal > 0 ? (stats['ok']! / todayTotal * 100).toStringAsFixed(1) : '0.0'; //Compute OK rate
+    final stats = _getFilteredStats(); //Compute filtered stats
+    final okCount = stats['ok'] as int;
+    final defectCount = stats['defect'] as int;
+    final periodLabel = stats['label'] as String;
+    final total = okCount + defectCount;
+    final okRate = total > 0 ? (okCount / total * 100).toStringAsFixed(1) : '0.0'; //Compute OK rate
 
     return Scaffold(
       appBar: AppBar(
@@ -359,32 +395,35 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), //Date chips
-            child: Row(
-              children: [
-                ChoiceChip(label: const Text('All time'), selected: _dateFilter == 'all', onSelected: (_) => setState(() => _dateFilter = 'all')),
-                const SizedBox(width: 8),
-                ChoiceChip(label: const Text('Today'), selected: _dateFilter == 'today', onSelected: (_) => setState(() => _dateFilter = 'today')),
-                const SizedBox(width: 8),
-                ChoiceChip(label: const Text('Last 7d'), selected: _dateFilter == '7d', onSelected: (_) => setState(() => _dateFilter = '7d')),
-                const SizedBox(width: 8),
-                ChoiceChip(
-                  label: Text(_dateFilter == 'custom' && _customStart != null && _customEnd != null
-                      ? '${_customStart!.month}/${_customStart!.day}–${_customEnd!.month}/${_customEnd!.day}'
-                      : 'Custom'),
-                  selected: _dateFilter == 'custom',
-                  onSelected: (_) async {
-                    final picked = await showDateRangePicker(
-                      context: context,
-                      firstDate: DateTime(2023, 1, 1),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                      initialDateRange: (_customStart != null && _customEnd != null) ? DateTimeRange(start: _customStart!, end: _customEnd!) : null,
-                    );
-                    if (picked != null) {
-                      setState(() { _dateFilter = 'custom'; _customStart = picked.start; _customEnd = picked.end; });
-                    }
-                  },
-                ),
-              ],
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ChoiceChip(label: const Text('All time'), selected: _dateFilter == 'all', onSelected: (_) => setState(() => _dateFilter = 'all')),
+                  const SizedBox(width: 8),
+                  ChoiceChip(label: const Text('Today'), selected: _dateFilter == 'today', onSelected: (_) => setState(() => _dateFilter = 'today')),
+                  const SizedBox(width: 8),
+                  ChoiceChip(label: const Text('Last 7d'), selected: _dateFilter == '7d', onSelected: (_) => setState(() => _dateFilter = '7d')),
+                  const SizedBox(width: 8),
+                  ChoiceChip(
+                    label: Text(_dateFilter == 'custom' && _customStart != null && _customEnd != null
+                        ? '${_customStart!.month}/${_customStart!.day}–${_customEnd!.month}/${_customEnd!.day}'
+                        : 'Custom'),
+                    selected: _dateFilter == 'custom',
+                    onSelected: (_) async {
+                      final picked = await showDateRangePicker(
+                        context: context,
+                        firstDate: DateTime(2023, 1, 1),
+                        lastDate: DateTime.now().add(const Duration(days: 365)),
+                        initialDateRange: (_customStart != null && _customEnd != null) ? DateTimeRange(start: _customStart!, end: _customEnd!) : null,
+                      );
+                      if (picked != null) {
+                        setState(() { _dateFilter = 'custom'; _customStart = picked.start; _customEnd = picked.end; });
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           Padding(
@@ -437,7 +476,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Text('No matching inspections'),
                                 const SizedBox(height: 8),
                                 TextButton.icon(
-                                  onPressed: () { setState(() { _statusFilter = 'all'; _searchCtrl.clear(); }); },
+                                  onPressed: () { setState(() { _statusFilter = 'all'; _searchCtrl.clear(); _dateFilter = 'all'; _customStart = null; _customEnd = null; }); },
                                   icon: const Icon(Icons.clear_all),
                                   label: const Text('Clear filters'),
                                 )
