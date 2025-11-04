@@ -20,9 +20,9 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // TODO: Specify my own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.example.orivis"
-        // You can update the following values to match your application needs.
+        // You can update the following values to match application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
@@ -32,7 +32,7 @@ android {
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
+            // TODO: Add my own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
                 proguardFiles(
@@ -49,7 +49,7 @@ flutter {
 
 dependencies {
     // Include TFLite GPU delegate to satisfy references used by tflite_flutter
-    // Version aligned with recent 2.x; adjust if your CI suggests a specific version
+    // Version aligned with recent 2.x; adjust if CI suggests a specific version
     implementation("org.tensorflow:tensorflow-lite-gpu-api:2.12.0")
     implementation("org.tensorflow:tensorflow-lite-gpu:2.12.0")
 }

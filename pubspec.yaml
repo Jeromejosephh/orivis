@@ -67,17 +67,25 @@ flutter:
     - assets/models/labels.txt
 
 # App icon generation (provide a 1024x1024 PNG at assets/app_icon.png)
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: assets/app_icon.png
+  image_path: "assets/app_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#1565C0"  # Match blue background
+  adaptive_icon_foreground: "assets/app_icon.png"
+  adaptive_icon_padding: 15  # Add padding to prevent cropping (0-100)
 
 # Splash screen generation
 flutter_native_splash:
-  color: "#ffffff"
-  color_dark: "#121212"
+  color: "#000000"  #Black background
+  color_dark: "#000000"
   image: assets/app_icon.png
   android_12:
-    color: "#ffffff"
-    color_dark: "#121212"
+    color: "#000000"
+    color_dark: "#000000"
     image: assets/app_icon.png
+  # Ensure the icon fills properly
+  fullscreen: true
+  android_gravity: center
+  ios_content_mode: center

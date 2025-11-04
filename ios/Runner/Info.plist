@@ -52,6 +52,8 @@
 		<key>NSPhotoLibraryAddUsageDescription</key>
 		<string>Allow Orivis to save inspection images to your photo library.</string>
 		<key>UIStatusBarHidden</key>
+		<true/>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 	</dict>
 </plist>
