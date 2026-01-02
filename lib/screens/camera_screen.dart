@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import '../services/inference_service.dart';
 import 'result_screen.dart';
 import '../services/logging_service.dart';
+import '../services/permission_service.dart';
 
 class CameraScreen extends StatefulWidget {
   const CameraScreen({super.key});
@@ -14,7 +15,6 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  final picker = ImagePicker(); //Initialize image picker
   final infer = InferenceService(); //Create inference service instance
   bool loading = true; //Track model load state
   String? err; //Hold model load error message
@@ -39,6 +39,49 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _choose(ImageSource src) async {
     try {
+      // Request appropriate permission
+      bool permissionGranted = false;
+      String permissionDeniedMessage = '';
+
+      if (src == ImageSource.camera) {
+        permissionGranted = await PermissionService.requestCameraPermission();
+        if (!permissionGranted) {
+          permissionDeniedMessage = 'Camera access is required to capture images.\n\nPlease enable camera permissions in Settings.';
+        }
+      } else {
+        permissionGranted = await PermissionService.requestPhotosPermission();
+        if (!permissionGranted) {
+          permissionDeniedMessage = 'Photo library access is required to select images.\n\nPlease enable photo library permissions in Settings.';
+        }
+      }
+
+      // Show permission denied dialog if needed
+      if (!permissionGranted) {
+        if (!mounted) return;
+        await showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Permission Denied'),
+            content: Text(permissionDeniedMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  PermissionService.openAppSettings();
+                  Navigator.pop(ctx);
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
+      final picker = ImagePicker();
       final x = await picker.pickImage(source: src); //Pick image from source
       if (x == null) return; //User cancelled selection
       final file = File(x.path); //Create a File handle
