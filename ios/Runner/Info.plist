@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>orivis</string>
+	<string>Orivis</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -26,6 +26,12 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Orivis needs camera access to inspect using AI</string>
+	<key>NSPhotoLibraryAddOnlyUsageDescription</key>
+	<string>Orivis needs permission to save inspection photos</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Orivis needs access to your photo library to analyse images</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
@@ -49,11 +55,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to take photos</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs access to your photo library</string>
-	<key>NSPhotoLibraryAddOnlyUsageDescription</key>
-	<string>This app needs permission to save photos to your library</string>
 </dict>
 </plist>

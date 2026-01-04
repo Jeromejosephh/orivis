@@ -256,8 +256,10 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         toolbarHeight: 68,
         titleSpacing: 16,
+        centerTitle: true,
         title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               'Orivis',
@@ -441,23 +443,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 ? Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32), //Empty state card
-                      child: Card(
-                        elevation: 0,
-                        color: Colors.indigo.shade50,
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.inventory_2_outlined, size: 64, color: Colors.indigo.shade300),
-                                const SizedBox(height: 16),
-                                Text('No inspections yet', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 8),
-                                Text('Start by capturing or selecting an image to inspect', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700)),
-                                const SizedBox(height: 20),
-                                FilledButton.icon(onPressed: widget.onStartInspection, icon: const Icon(Icons.camera_alt), label: const Text('Start Inspection')),
-                              ],
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 420),
+                          child: Card(
+                            elevation: 0,
+                            color: Colors.indigo.shade50,
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.inventory_2_outlined, size: 64, color: Colors.indigo.shade300),
+                                  const SizedBox(height: 16),
+                                  Text('No inspections yet', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+                                  const SizedBox(height: 8),
+                                  Text('Start by capturing or selecting an image to inspect', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700)),
+                                  const SizedBox(height: 20),
+                                  FilledButton.icon(onPressed: widget.onStartInspection, icon: const Icon(Icons.camera_alt), label: const Text('Start Inspection')),
+                                ],
+                              ),
                             ),
                           ),
                         ),

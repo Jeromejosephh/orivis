@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../services/inference_service.dart';
 import 'result_screen.dart';
 import '../services/logging_service.dart';
@@ -39,23 +40,23 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Future<void> _choose(ImageSource src) async {
     try {
-      // Request appropriate permission
       bool permissionGranted = false;
       String permissionDeniedMessage = '';
 
       if (src == ImageSource.camera) {
-        permissionGranted = await PermissionService.requestCameraPermission();
+        permissionGranted = await PermissionService.ensureCameraPrompt();
         if (!permissionGranted) {
-          permissionDeniedMessage = 'Camera access is required to capture images.\n\nPlease enable camera permissions in Settings.';
+          permissionDeniedMessage =
+              'Camera access is required to capture images.\n\nIf you previously denied it, enable Camera in Settings > Orivis.';
         }
       } else {
         permissionGranted = await PermissionService.requestPhotosPermission();
         if (!permissionGranted) {
-          permissionDeniedMessage = 'Photo library access is required to select images.\n\nPlease enable photo library permissions in Settings.';
+          permissionDeniedMessage =
+              'Photo library access is required to select images.\n\nPlease enable photo permissions in Settings.';
         }
       }
 
-      // Show permission denied dialog if needed
       if (!permissionGranted) {
         if (!mounted) return;
         await showDialog<void>(

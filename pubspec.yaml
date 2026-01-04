@@ -1,4 +1,4 @@
-name: orivis
+name: Orivis
 description: "On-device image inspection app using TensorFlow Lite with offline inference, history, retention policy, and diagnostics."
 repository: https://github.com/Jeromejosephh/orivis
 homepage: https://github.com/Jeromejosephh/orivis
