@@ -5,11 +5,20 @@ import 'screens/camera_screen.dart';
 import 'screens/settings_screen.dart';
 import 'services/settings_service.dart';
 import 'services/data_service.dart';
+import 'services/permission_service.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   _performStartupCleanup(); //Run retention cleanup on startup
+  _initializePermissions(); //Initialize permission service
   runApp(const OrivisApp()); //Start the app
+}
+
+Future<void> _initializePermissions() async {
+  try {
+    await PermissionService.cameraStatus(); //Trigger permission initialization
+    await PermissionService.isPhotosGranted(); //Trigger photos permission check
+  } catch (_) {}
 }
 
 Future<void> _performStartupCleanup() async {

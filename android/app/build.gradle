@@ -4,8 +4,26 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
 android {
-    namespace "com.example.orivis"
+    namespace "com.jeromejoseph.orivis"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -16,8 +34,8 @@ android {
     kotlinOptions { jvmTarget = "17" }
 
     defaultConfig {
-        applicationId "com.example.orivis"
-        minSdkVersion 21
+        applicationId "com.jeromejoseph.orivis"
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -25,7 +43,8 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.debug
+            // Signing will be configured only when publishing
+            // For now, debug builds don't need signing
         }
     }
 }

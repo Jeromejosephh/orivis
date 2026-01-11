@@ -1,4 +1,4 @@
-package com.example.orivis
+package com.jeromejoseph.orivis
 
 import io.flutter.embedding.android.FlutterActivity
 

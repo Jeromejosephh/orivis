@@ -160,11 +160,11 @@ class _HomeScreenState extends State<HomeScreen> {
     // Generate label based on filter
     String periodLabel;
     if (_dateFilter == 'all') {
-      periodLabel = 'All Time';
+      periodLabel = 'All';
     } else if (_dateFilter == 'today') {
       periodLabel = 'Today';
     } else if (_dateFilter == '7d') {
-      periodLabel = 'Last 7 Days';
+      periodLabel = '7d';
     } else if (_dateFilter == 'custom' && _customStart != null && _customEnd != null) {
       periodLabel = '${_customStart!.month}/${_customStart!.day}–${_customEnd!.month}/${_customEnd!.day}';
     } else {
@@ -251,360 +251,378 @@ class _HomeScreenState extends State<HomeScreen> {
     final total = okCount + defectCount;
     final okRate = total > 0 ? (okCount / total * 100).toStringAsFixed(1) : '0.0'; //Compute OK rate
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: 68,
-        titleSpacing: 16,
-        centerTitle: true,
-        title: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'Orivis',
-              style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.3,
-                fontFamily: 'SF Pro Display',
-              ),
-            ),
-            Text(
-              'History and insights',
-              style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-                    letterSpacing: 0.2,
-                  ),
-            ),
-          ],
-        ),
-        actions: const [],
-      ), //Enhanced heading
-      body: Column(
-        children: [
-          if (_showSwipeHint)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
-              child: Card(
-                color: Colors.blue.shade50,
-                child: ListTile(
-                  leading: const Icon(Icons.swipe_left, color: Colors.blue),
-                  title: const Text('Swipe left on a row to Share, Edit, or Delete', style: TextStyle(fontSize: 14)),
-                  trailing: TextButton(
-                    onPressed: () async { setState(() => _showSwipeHint = false); await settings.setSwipeHintShown(true); },
-                    child: const Text('Got it'),
-                  ),
-                ),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(12), //Quick stats cards
-            child: Row(
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            toolbarHeight: 68,
+            titleSpacing: 16,
+            centerTitle: true,
+            title: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Card(
-                    color: Colors.green.shade50,
-                    child: Container(
-                      height: 100,
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('$okCount', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.green)),
-                          const SizedBox(height: 4),
-                          const Text('OK', style: TextStyle(fontSize: 12, color: Colors.green, fontWeight: FontWeight.w600)),
-                          Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('($periodLabel)', style: const TextStyle(fontSize: 10, color: Colors.green)))),
-                        ],
-                      ),
-                    ),
+                Text(
+                  'Orivis',
+                  style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.3,
+                    fontFamily: 'SF Pro Display',
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Card(
-                    color: Colors.red.shade50,
-                    child: Container(
-                      height: 100,
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('$defectCount', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.red)),
-                          const SizedBox(height: 4),
-                          const Text('Defects', style: TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w600)),
-                          Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('($periodLabel)', style: const TextStyle(fontSize: 10, color: Colors.red)))),
-                        ],
+                Text(
+                  'History and insights',
+                  style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                        letterSpacing: 0.2,
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Card(
-                    color: Colors.blue.shade50,
-                    child: Container(
-                      height: 100,
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('$okRate%', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue)),
-                          const SizedBox(height: 4),
-                          const Text('Pass Rate', style: TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.w600)),
-                          const Text('(Overall)', style: TextStyle(fontSize: 10, color: Colors.blue)),
-                        ],
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),
-          ),
-          const Divider(height: 8),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 6, 12, 6), //Search bar
-            child: TextField(
-              controller: _searchCtrl,
-              onChanged: (_) => setState(() {}),
-              decoration: InputDecoration(
-                hintText: 'Search by PID, BID or Operator',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchCtrl.text.isEmpty ? null : IconButton(
-                  tooltip: 'Clear',
-                  icon: const Icon(Icons.clear),
-                  onPressed: () { _searchCtrl.clear(); setState(() {}); },
-                ),
-                isDense: true,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), //Status chips
-            child: Row(
-              children: [
-                ChoiceChip(label: const Text('All'), selected: _statusFilter == 'all', onSelected: (_) => setState(() => _statusFilter = 'all')),
-                const SizedBox(width: 8),
-                ChoiceChip(label: const Text('OK'), selected: _statusFilter == 'ok', onSelected: (_) => setState(() => _statusFilter = 'ok')),
-                const SizedBox(width: 8),
-                ChoiceChip(label: const Text('Defects'), selected: _statusFilter == 'defect', onSelected: (_) => setState(() => _statusFilter = 'defect')),
-                const Spacer(),
-                if (_statusFilter != 'all' || _searchCtrl.text.isNotEmpty)
-                  TextButton.icon(
-                    onPressed: () { setState(() { _statusFilter = 'all'; _searchCtrl.clear(); _dateFilter = 'all'; _customStart = null; _customEnd = null; }); },
-                    icon: const Icon(Icons.clear_all),
-                    label: const Text('Clear'),
-                  ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), //Date chips
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  ChoiceChip(label: const Text('All time'), selected: _dateFilter == 'all', onSelected: (_) => setState(() => _dateFilter = 'all')),
-                  const SizedBox(width: 8),
-                  ChoiceChip(label: const Text('Today'), selected: _dateFilter == 'today', onSelected: (_) => setState(() => _dateFilter = 'today')),
-                  const SizedBox(width: 8),
-                  ChoiceChip(label: const Text('Last 7d'), selected: _dateFilter == '7d', onSelected: (_) => setState(() => _dateFilter = '7d')),
-                  const SizedBox(width: 8),
-                  ChoiceChip(
-                    label: Text(_dateFilter == 'custom' && _customStart != null && _customEnd != null
-                        ? '${_customStart!.month}/${_customStart!.day}–${_customEnd!.month}/${_customEnd!.day}'
-                        : 'Custom'),
-                    selected: _dateFilter == 'custom',
-                    onSelected: (_) async {
-                      final picked = await showDateRangePicker(
-                        context: context,
-                        firstDate: DateTime(2023, 1, 1),
-                        lastDate: DateTime.now().add(const Duration(days: 365)),
-                        initialDateRange: (_customStart != null && _customEnd != null) ? DateTimeRange(start: _customStart!, end: _customEnd!) : null,
-                      );
-                      if (picked != null) {
-                        setState(() { _dateFilter = 'custom'; _customStart = picked.start; _customEnd = picked.end; });
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4), //Counter label
-            child: Builder(builder: (context) {
-              final filtered = _filtered(history);
-              return Text('Saved Inspections (${filtered.length}/${history.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16));
-            }),
-          ),
-          Expanded(
-            child: history.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(32), //Empty state card
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 420),
-                          child: Card(
-                            elevation: 0,
-                            color: Colors.indigo.shade50,
-                            child: Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.inventory_2_outlined, size: 64, color: Colors.indigo.shade300),
-                                  const SizedBox(height: 16),
-                                  Text('No inspections yet', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
-                                  const SizedBox(height: 8),
-                                  Text('Start by capturing or selecting an image to inspect', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700)),
-                                  const SizedBox(height: 20),
-                                  FilledButton.icon(onPressed: widget.onStartInspection, icon: const Icon(Icons.camera_alt), label: const Text('Start Inspection')),
-                                ],
-                              ),
-                            ),
+            actions: const [],
+          ), //Enhanced heading
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Card(
+                        color: Colors.green.shade50,
+                        child: Container(
+                          height: 100,
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('$okCount', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.green)),
+                              const SizedBox(height: 4),
+                              const Text('OK', style: TextStyle(fontSize: 12, color: Colors.green, fontWeight: FontWeight.w600)),
+                              Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('($periodLabel)', style: const TextStyle(fontSize: 10, color: Colors.green)))),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                  )
-                : Builder(
-                    builder: (context) {
-                      final filtered = _filtered(history); //Apply filters
-                      if (filtered.isEmpty) {
-                        return Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(24), //No results state
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.search_off, size: 56, color: Colors.grey),
-                                const SizedBox(height: 12),
-                                const Text('No matching inspections'),
-                                const SizedBox(height: 8),
-                                TextButton.icon(
-                                  onPressed: () { setState(() { _statusFilter = 'all'; _searchCtrl.clear(); _dateFilter = 'all'; _customStart = null; _customEnd = null; }); },
-                                  icon: const Icon(Icons.clear_all),
-                                  label: const Text('Clear filters'),
-                                )
-                              ],
-                            ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Card(
+                        color: Colors.red.shade50,
+                        child: Container(
+                          height: 100,
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('$defectCount', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.red)),
+                              const SizedBox(height: 4),
+                              const Text('Defects', style: TextStyle(fontSize: 12, color: Colors.red, fontWeight: FontWeight.w600)),
+                              Flexible(child: FittedBox(fit: BoxFit.scaleDown, child: Text('($periodLabel)', style: const TextStyle(fontSize: 10, color: Colors.red)))),
+                            ],
                           ),
-                        );
-                      }
-                      return ListView.builder(
-                        itemCount: filtered.length, //Render list
-                        itemBuilder: (_, i) {
-                          final it = filtered[i];
-                          final label = (it['label'] ?? '').toString();
-                          final conf = (it['confidence'] as num?)?.toDouble() ?? 0.0;
-                          final pid = it['productId'] ?? '';
-                          final bid = it['batchId'] ?? '';
-                          final st = it['station'] ?? '';
-                          final op = it['operatorId'] ?? '';
-                          final imgPath = it['imagePath'] ?? '';
-                          final ts = it['timestamp'] ?? (it['time'] ?? '');
-                          final ok = label.toUpperCase() == 'OK';
-                          final color = ok ? Colors.green : Colors.red;
-                          final displayLabel = label.replaceAll('_', '/'); //Prettify label
-                          return Slidable(
-                            key: Key('${it['timestamp']}_$i'),
-                            endActionPane: ActionPane(
-                              motion: const DrawerMotion(),
-                              children: [
-                                SlidableAction(onPressed: (_) => _shareInspection(it), backgroundColor: Colors.blue, foregroundColor: Colors.white, icon: Icons.ios_share, label: 'Share'),
-                                SlidableAction(
-                                  onPressed: (_) {
-                                    final actualIndex = history.length - 1 - history.indexOf(it); //Map to stored index
-                                    _editInspection(actualIndex, it);
-                                  },
-                                  backgroundColor: Colors.orange, foregroundColor: Colors.white, icon: Icons.edit, label: 'Edit',
-                                ),
-                                SlidableAction(
-                                  onPressed: (_) async {
-                                    final messenger = ScaffoldMessenger.of(context); //Capture messenger
-                                    final confirm = await showDialog<bool>(
-                                          context: context,
-                                          builder: (ctx) => AlertDialog(
-                                            title: const Text('Delete Inspection'),
-                                            content: const Text('Are you sure you want to delete this inspection?'),
-                                            actions: [
-                                              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                                              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
-                                            ],
-                                          ),
-                                        ) ?? false;
-                                    if (!confirm) return;
-                                    final actualIndex = history.length - 1 - history.indexOf(it); //Compute index again
-                                    final deletedItem = Map<String, dynamic>.from(it); //Snapshot for undo
-                                    await data.delete(actualIndex); //Delete item
-                                    await _load(); //Refresh list
-                                    if (!mounted) return;
-                                    messenger.showSnackBar(
-                                      SnackBar(
-                                        content: const Text('Inspection deleted'),
-                                        duration: const Duration(seconds: 4),
-                                        action: SnackBarAction(
-                                          label: 'Undo',
-                                          onPressed: () async { await data.insertAt(actualIndex, deletedItem); await _load(); }, //Undo restore
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  backgroundColor: Colors.red, foregroundColor: Colors.white, icon: Icons.delete, label: 'Delete',
-                                ),
-                              ],
-                            ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Card(
+                        color: Colors.blue.shade50,
+                        child: Container(
+                          height: 100,
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('$okRate%', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.blue)),
+                              const SizedBox(height: 4),
+                              const Text('Pass Rate', style: TextStyle(fontSize: 12, color: Colors.blue, fontWeight: FontWeight.w600)),
+                              const Text('(Overall)', style: TextStyle(fontSize: 10, color: Colors.blue)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 8),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 6, 12, 6), //Search bar
+                child: TextField(
+                  controller: _searchCtrl,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    hintText: 'Search by PID, BID or Operator',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchCtrl.text.isEmpty ? null : IconButton(
+                      tooltip: 'Clear',
+                      icon: const Icon(Icons.clear),
+                      onPressed: () { _searchCtrl.clear(); setState(() {}); },
+                    ),
+                    isDense: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), //Status chips
+                child: Row(
+                  children: [
+                    ChoiceChip(label: const Text('All'), selected: _statusFilter == 'all', onSelected: (_) => setState(() => _statusFilter = 'all')),
+                    const SizedBox(width: 8),
+                    ChoiceChip(label: const Text('OK'), selected: _statusFilter == 'ok', onSelected: (_) => setState(() => _statusFilter = 'ok')),
+                    const SizedBox(width: 8),
+                    ChoiceChip(label: const Text('Defects'), selected: _statusFilter == 'defect', onSelected: (_) => setState(() => _statusFilter = 'defect')),
+                    const Spacer(),
+                    if (_statusFilter != 'all' || _searchCtrl.text.isNotEmpty)
+                      TextButton.icon(
+                        onPressed: () { setState(() { _statusFilter = 'all'; _searchCtrl.clear(); _dateFilter = 'all'; _customStart = null; _customEnd = null; }); },
+                        icon: const Icon(Icons.clear_all),
+                        label: const Text('Clear'),
+                      ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4), //Date chips
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      ChoiceChip(label: const Text('All time'), selected: _dateFilter == 'all', onSelected: (_) => setState(() => _dateFilter = 'all')),
+                      const SizedBox(width: 8),
+                      ChoiceChip(label: const Text('Today'), selected: _dateFilter == 'today', onSelected: (_) => setState(() => _dateFilter = 'today')),
+                      const SizedBox(width: 8),
+                      ChoiceChip(label: const Text('Last 7d'), selected: _dateFilter == '7d', onSelected: (_) => setState(() => _dateFilter = '7d')),
+                      const SizedBox(width: 8),
+                      ChoiceChip(
+                        label: Text(_dateFilter == 'custom' && _customStart != null && _customEnd != null
+                            ? '${_customStart!.month}/${_customStart!.day}–${_customEnd!.month}/${_customEnd!.day}'
+                            : 'Custom'),
+                        selected: _dateFilter == 'custom',
+                        onSelected: (_) async {
+                          final picked = await showDateRangePicker(
+                            context: context,
+                            firstDate: DateTime(2023, 1, 1),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                            initialDateRange: (_customStart != null && _customEnd != null) ? DateTimeRange(start: _customStart!, end: _customEnd!) : null,
+                          );
+                          if (picked != null) {
+                            setState(() { _dateFilter = 'custom'; _customStart = picked.start; _customEnd = picked.end; });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4), //Counter label
+                child: Builder(builder: (context) {
+                  final filtered = _filtered(history);
+                  return Text('Saved Inspections (${filtered.length}/${history.length})', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16));
+                }),
+              ),
+              Expanded(
+               child: history.isEmpty
+                   ? Center(
+                        child: Padding(
+                         padding: const EdgeInsets.all(32), //Empty state card
+                         child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 420),
                             child: Card(
-                              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              child: ListTile(
-                                leading: GestureDetector(
-                                  onTap: () => _showFullImage(imgPath), //Open full image
-                                  child: imgPath.isNotEmpty && File(imgPath).existsSync()
-                                      ? ClipRRect(
-                                          borderRadius: BorderRadius.circular(4),
-                                          child: Image.file(File(imgPath), width: 60, height: 60, fit: BoxFit.cover),
-                                        )
-                                      : Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
-                                          child: const Icon(Icons.image, color: Colors.grey),
-                                        ),
-                                ),
-                                onTap: () async {
-                                  final actualIndex = history.length - 1 - history.indexOf(it); //Map to stored index
-                                  final changed = await Navigator.push<bool>(
-                                    context,
-                                    MaterialPageRoute(builder: (_) => InspectionDetailScreen(item: it, actualIndex: actualIndex)),
-                                  );
-                                  if (changed == true) { await _load(); } //Refresh after edits/deletion
-                                },
-                                title: Text(ok ? 'OK' : 'Defect: $displayLabel', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 4),
-                                    Text('Confidence: ${(conf * 100).toStringAsFixed(1)}%'),
-                                    if (pid.isNotEmpty) Text('Product ID: $pid'),
-                                    if (bid.isNotEmpty) Text('Batch ID: $bid'),
-                                    if (st.isNotEmpty) Text('Station: $st'),
-                                    if (op.isNotEmpty) Text('Operator: $op'),
-                                    Text(_formatTimestamp(ts), style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                             elevation: 0,
+                              color: Colors.indigo.shade50,
+                              child: Padding(
+                               padding: const EdgeInsets.all(24),
+                               child: Column(
+                                 mainAxisSize: MainAxisSize.min,
+                                 children: [
+                                   Icon(Icons.inventory_2_outlined, size: 64, color: Colors.indigo.shade300),
+                                    const SizedBox(height: 16),
+                                    Text('No inspections yet', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 8),
+                                    Text('Start by capturing or selecting an image to inspect', textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade700)),
+                                    const SizedBox(height: 20),
+                                    FilledButton.icon(onPressed: widget.onStartInspection, icon: const Icon(Icons.camera_alt), label: const Text('Start Inspection')),
                                   ],
                                 ),
                               ),
                             ),
+                          ),
+                        ),
+                      )
+                   : Builder(
+                      builder: (context) {
+                        final filtered = _filtered(history); //Apply filters
+                        if (filtered.isEmpty) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(24), //No results state
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.search_off, size: 56, color: Colors.grey),
+                                  const SizedBox(height: 12),
+                                  const Text('No matching inspections'),
+                                  const SizedBox(height: 8),
+                                  TextButton.icon(
+                                    onPressed: () { setState(() { _statusFilter = 'all'; _searchCtrl.clear(); _dateFilter = 'all'; _customStart = null; _customEnd = null; }); },
+                                    icon: const Icon(Icons.clear_all),
+                                    label: const Text('Clear filters'),
+                                  )
+                                ],
+                              ),
+                            ),
                           );
-                        },
-                      );
-                    },
-                  ),
+                        }
+                        return ListView.builder(
+                          itemCount: filtered.length, //Render list
+                          itemBuilder: (_, i) {
+                            final it = filtered[i];
+                            final label = (it['label'] ?? '').toString();
+                            final conf = (it['confidence'] as num?)?.toDouble() ?? 0.0;
+                            final pid = it['productId'] ?? '';
+                            final bid = it['batchId'] ?? '';
+                            final st = it['station'] ?? '';
+                            final op = it['operatorId'] ?? '';
+                            final imgPath = it['imagePath'] ?? '';
+                            final ts = it['timestamp'] ?? (it['time'] ?? '');
+                            final ok = label.toUpperCase() == 'OK';
+                            final color = ok ? Colors.green : Colors.red;
+                            final displayLabel = label.replaceAll('_', '/'); //Prettify label
+                            return Slidable(
+                              key: Key('${it['timestamp']}_$i'),
+                              endActionPane: ActionPane(
+                                motion: const DrawerMotion(),
+                                children: [
+                                  SlidableAction(onPressed: (_) => _shareInspection(it), backgroundColor: Colors.blue, foregroundColor: Colors.white, icon: Icons.ios_share, label: 'Share'),
+                                  SlidableAction(
+                                    onPressed: (_) {
+                                      final actualIndex = history.length - 1 - history.indexOf(it); //Map to stored index
+                                      _editInspection(actualIndex, it);
+                                    },
+                                    backgroundColor: Colors.orange, foregroundColor: Colors.white, icon: Icons.edit, label: 'Edit',
+                                  ),
+                                  SlidableAction(
+                                    onPressed: (_) async {
+                                      final messenger = ScaffoldMessenger.of(context); //Capture messenger
+                                      final confirm = await showDialog<bool>(
+                                            context: context,
+                                            builder: (ctx) => AlertDialog(
+                                              title: const Text('Delete Inspection'),
+                                              content: const Text('Are you sure you want to delete this inspection?'),
+                                              actions: [
+                                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                                TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                                              ],
+                                            ),
+                                          ) ?? false;
+                                      if (!confirm) return;
+                                      final actualIndex = history.length - 1 - history.indexOf(it); //Compute index again
+                                      final deletedItem = Map<String, dynamic>.from(it); //Snapshot for undo
+                                      await data.delete(actualIndex); //Delete item
+                                      await _load(); //Refresh list
+                                      if (!mounted) return;
+                                      messenger.showSnackBar(
+                                        SnackBar(
+                                          content: const Text('Inspection deleted'),
+                                          duration: const Duration(seconds: 4),
+                                          action: SnackBarAction(
+                                            label: 'Undo',
+                                            onPressed: () async { await data.insertAt(actualIndex, deletedItem); await _load(); }, //Undo restore
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    backgroundColor: Colors.red, foregroundColor: Colors.white, icon: Icons.delete, label: 'Delete',
+                                  ),
+                                ],
+                              ),
+                              child: Card(
+                                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                child: ListTile(
+                                  leading: GestureDetector(
+                                    onTap: () => _showFullImage(imgPath), //Open full image
+                                    child: imgPath.isNotEmpty && File(imgPath).existsSync()
+                                        ? ClipRRect(
+                                            borderRadius: BorderRadius.circular(4),
+                                            child: Image.file(File(imgPath), width: 60, height: 60, fit: BoxFit.cover),
+                                          )
+                                        : Container(
+                                            width: 60,
+                                            height: 60,
+                                            decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(4)),
+                                            child: const Icon(Icons.image, color: Colors.grey),
+                                          ),
+                                  ),
+                                  onTap: () async {
+                                    final actualIndex = history.length - 1 - history.indexOf(it); //Map to stored index
+                                    final changed = await Navigator.push<bool>(
+                                      context,
+                                      MaterialPageRoute(builder: (_) => InspectionDetailScreen(item: it, actualIndex: actualIndex)),
+                                    );
+                                    if (changed == true) { await _load(); } //Refresh after edits/deletion
+                                  },
+                                  title: Text(ok ? 'OK' : 'Defect: $displayLabel', style: TextStyle(color: color, fontWeight: FontWeight.w600)),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 4),
+                                      Text('Confidence: ${(conf * 100).toStringAsFixed(1)}%'),
+                                      if (pid.isNotEmpty) Text('Product ID: $pid'),
+                                      if (bid.isNotEmpty) Text('Batch ID: $bid'),
+                                      if (st.isNotEmpty) Text('Station: $st'),
+                                      if (op.isNotEmpty) Text('Operator: $op'),
+                                      Text(_formatTimestamp(ts), style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+            )
+          ],
           )
-        ],
-      ),
+        ),
+        if (_showSwipeHint)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black54,
+              child: Center(
+                child: Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Swipe left on a row to Share, Edit, or Delete',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () async {
+                            setState(() => _showSwipeHint = false);
+                            await settings.setSwipeHintShown(true);
+                          },
+                          child: const Text('Got it'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

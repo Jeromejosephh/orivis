@@ -1,4 +1,5 @@
 //settings_service.dart
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -9,6 +10,8 @@ class SettingsService {
   static const _keyHaptics = 'orivis_haptics_enabled'; //Store haptics toggle
   static const _keySwipeHintShown = 'orivis_swipe_hint_shown'; //Store swipe hint
   static const _keyRetentionPolicy = 'orivis_retention_policy'; //Store retention policy
+
+  ThemeMode _themeMode = ThemeMode.system;
 
   Future<double> get() async {
     final p = await SharedPreferences.getInstance(); //Load prefs
@@ -75,5 +78,11 @@ class SettingsService {
   Future<void> setRetentionPolicy(String v) async {
     final p = await SharedPreferences.getInstance(); //Load prefs
     await p.setString(_keyRetentionPolicy, v); //Persist policy
+  }
+
+  Future<ThemeMode> themeMode() async => _themeMode;
+
+  Future<void> updateThemeMode(ThemeMode theme) async {
+    _themeMode = theme;
   }
 }
